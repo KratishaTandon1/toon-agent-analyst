@@ -57,7 +57,7 @@ function App() {
   const [ledgerLogs, setLedgerLogs] = useState<RunLog[]>([]);
 
   // Guide Toggle State
-  const [showHelpGuide, setShowHelpGuide] = useState<boolean>(true);
+  const [showHelpGuide, setShowHelpGuide] = useState<boolean>(false);
 
   // Load settings and ledger from localStorage
   useEffect(() => {
