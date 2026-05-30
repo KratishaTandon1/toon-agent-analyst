@@ -94,7 +94,7 @@ export const PromptPlayground: React.FC<PromptPlaygroundProps> = ({
         Compare how different system prompts affect model outputs, latencies (response speed), and token footprints using the same TOON database payload.
       </p>
 
-      <div className="playground-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="playground-split-grid">
         {/* Prompts Input */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="setting-row-vertical" style={{ gap: '0.4rem' }}>

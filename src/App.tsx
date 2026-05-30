@@ -264,72 +264,84 @@ Synthesize a comprehensive, factual, and quantitative answer addressing the user
             onClick={() => setActiveTab('agent')} 
             className={`nav-item ${activeTab === 'agent' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
             Agent Team
           </button>
           <button 
             onClick={() => setActiveTab('prompt_test')} 
             className={`nav-item ${activeTab === 'prompt_test' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
             Prompt A/B Tester
           </button>
           <button 
             onClick={() => setActiveTab('dev_sdk')} 
             className={`nav-item ${activeTab === 'dev_sdk' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Developer SDKs
           </button>
           <button 
             onClick={() => setActiveTab('documents')} 
             className={`nav-item ${activeTab === 'documents' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
             RAG Documents
           </button>
           <button 
             onClick={() => setActiveTab('ledger')} 
             className={`nav-item ${activeTab === 'ledger' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Cost Ledger
           </button>
           <button 
             onClick={() => setActiveTab('r_console')} 
             className={`nav-item ${activeTab === 'r_console' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m7 8 3 3-3 3"/><path d="M12 14h4"/></svg>
             RAG Console
           </button>
           <button 
             onClick={() => setActiveTab('chat')} 
             className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Chat Memory
           </button>
           <button 
             onClick={() => setActiveTab('api')} 
             className={`nav-item ${activeTab === 'api' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M5 12h14"/><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
             API Fetcher
           </button>
           <button 
             onClick={() => setActiveTab('optimizer')} 
             className={`nav-item ${activeTab === 'optimizer' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><path d="M3 3h18v18H3z"/><path d="M21 9H3M21 15H3M12 3v18"/></svg>
             Schema Optimizer
           </button>
           <button 
             onClick={() => setActiveTab('database')} 
             className={`nav-item ${activeTab === 'database' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
             Mock DBs
           </button>
           <button 
             onClick={() => setActiveTab('playground')} 
             className={`nav-item ${activeTab === 'playground' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Playground
           </button>
           <button 
             onClick={() => setActiveTab('settings')} 
             className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nav-icon-svg"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Settings
           </button>
         </nav>

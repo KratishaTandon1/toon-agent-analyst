@@ -199,10 +199,10 @@ export const MultiAgentTeam: React.FC<MultiAgentTeamProps> = ({
         
         <span className="font-bold text-gradient" style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.8 }}>Interactive Node Configurator:</span>
         
-        <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', width: '100%', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', width: '100%', marginTop: '0.5rem' }}>
           
           {/* Planner Node Tuner */}
-          <div className={`agent-node ${currentNode === 'Planner' ? 'active-node highlight-glow' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '160px' }}>
+          <div className={`agent-node ${currentNode === 'Planner' ? 'active-node highlight-glow' : ''}`} style={{ minWidth: '160px' }}>
             <div className="node-icon" style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: currentNode === 'Planner' ? 'var(--brand-primary)' : 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>🧠</div>
             <span className="node-lbl font-bold" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>1. Planner Agent</span>
             
@@ -221,8 +221,15 @@ export const MultiAgentTeam: React.FC<MultiAgentTeamProps> = ({
             </div>
           </div>
 
+          {/* Connector 1 -> 2 */}
+          <div className="node-connector">
+            <svg viewBox="0 0 50 24" className={`connector-arrow-svg ${currentNode === 'Data Extractor' ? 'speed-flow' : ''}`}>
+              <path d="M0 12H44M44 12L38 6M44 12L38 18" fill="none" />
+            </svg>
+          </div>
+
           {/* Executor Node Tuner */}
-          <div className={`agent-node ${currentNode === 'Data Extractor' ? 'active-node highlight-glow' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '160px' }}>
+          <div className={`agent-node ${currentNode === 'Data Extractor' ? 'active-node highlight-glow' : ''}`} style={{ minWidth: '160px' }}>
             <div className="node-icon" style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: currentNode === 'Data Extractor' ? 'var(--brand-primary)' : 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>🔧</div>
             <span className="node-lbl font-bold" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>2. Data/Tool Agent</span>
             
@@ -231,8 +238,15 @@ export const MultiAgentTeam: React.FC<MultiAgentTeamProps> = ({
             </div>
           </div>
 
+          {/* Connector 2 -> 3 */}
+          <div className="node-connector">
+            <svg viewBox="0 0 50 24" className={`connector-arrow-svg ${currentNode === 'Analyst' ? 'speed-flow' : ''}`}>
+              <path d="M0 12H44M44 12L38 6M44 12L38 18" fill="none" />
+            </svg>
+          </div>
+
           {/* Analyst Node Tuner */}
-          <div className={`agent-node ${currentNode === 'Analyst' ? 'active-node highlight-glow' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '160px' }}>
+          <div className={`agent-node ${currentNode === 'Analyst' ? 'active-node highlight-glow' : ''}`} style={{ minWidth: '160px' }}>
             <div className="node-icon" style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: currentNode === 'Analyst' ? 'var(--brand-primary)' : 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>📊</div>
             <span className="node-lbl font-bold" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>3. Analyst Agent</span>
             
