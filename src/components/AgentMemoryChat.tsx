@@ -45,14 +45,71 @@ export const AgentMemoryChat: React.FC = () => {
   
   const fillPercent = Math.min(100, (totalTokens / CONTEXT_LIMIT) * 100);
 
+  const cleanTechnologyName = (rawTech: string): string => {
+    const clean = rawTech.toLowerCase().trim();
+    const TECH_MAP: Record<string, string> = {
+      'react': 'React',
+      'typescript': 'TypeScript',
+      'javascript': 'JavaScript',
+      'python': 'Python',
+      'node': 'Node.js',
+      'express': 'Express',
+      'fastapi': 'FastAPI',
+      'c++': 'C++',
+      'cpp': 'C++',
+      'java': 'Java',
+      'rust': 'Rust',
+      'go': 'Go',
+      'ruby': 'Ruby',
+      'html': 'HTML',
+      'css': 'CSS',
+      'sql': 'SQL'
+    };
+
+    const matches: { key: string; index: number }[] = [];
+    for (const key of Object.keys(TECH_MAP)) {
+      const idx = clean.indexOf(key);
+      if (idx !== -1) {
+        matches.push({ key, index: idx });
+      }
+    }
+
+    if (matches.length > 0) {
+      matches.sort((a, b) => {
+        if (a.index !== b.index) {
+          return a.index - b.index;
+        }
+        return b.key.length - a.key.length;
+      });
+      return TECH_MAP[matches[0].key];
+    }
+
+    const words = rawTech.trim().split(/\s+/).slice(0, 2).join(' ');
+    return words.replace(/\b\w/g, c => c.toUpperCase());
+  };
+
+  const cleanLocationName = (rawLoc: string): string => {
+    const clean = rawLoc.replace(/,/g, ' ').trim();
+    const cutoffWords = ['currently', 'now', 'temporary', 'temporarily', 'lately', 'with', 'at', 'near', 'since', 'for'];
+    let words = clean.split(/\s+/).filter(Boolean);
+    
+    const cutoffIdx = words.findIndex(w => cutoffWords.includes(w.toLowerCase()));
+    if (cutoffIdx !== -1) {
+      words = words.slice(0, cutoffIdx);
+    }
+
+    const filtered = words.slice(0, 2).join(' ');
+    return filtered.replace(/\b\w/g, c => c.toUpperCase());
+  };
+
   // Simulate Agent memory extraction logic
   const getSimulatedAgentResponse = (q: string): string => {
     const qLower = q.toLowerCase();
     
     // Match "I live in <Location>" or "I am from <Location>" or location matches
-    const locationMatch = q.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z\s]+)/i);
+    const locationMatch = q.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s\-]+)/i);
     if (locationMatch && locationMatch[1]) {
-      const loc = locationMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      const loc = cleanLocationName(locationMatch[1]);
       return `Interesting location context! I've noted that you are located in "${loc}" and added it to my long-term memory. Knowing your geography allows me to optimize server request routing.`;
     }
 
@@ -74,7 +131,7 @@ export const AgentMemoryChat: React.FC = () => {
     // Match general technologies like React, Node, Python, Python/FastAPI, etc.
     const techMatch = q.match(/(?:i\s+use|i\s+develop\s+in|i\s+write|coding\s+in)\s+([a-zA-Z0-9/#.+\s]+)/i);
     if (techMatch && techMatch[1]) {
-      const tech = techMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      const tech = cleanTechnologyName(techMatch[1]);
       return `Excellent technology choice! I've logged that you work with "${tech}". I'll align our pipeline logic with ${tech} templates.`;
     }
     
@@ -120,9 +177,9 @@ export const AgentMemoryChat: React.FC = () => {
     const newFacts: Fact[] = [];
     
     // Match location
-    const locationMatch = userText.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z\s]+)/i);
+    const locationMatch = userText.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s\-]+)/i);
     if (locationMatch && locationMatch[1]) {
-      const loc = locationMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      const loc = cleanLocationName(locationMatch[1]);
       newFacts.push({ topic: 'Location', detail: `Lives in ${loc}`, importance: 'medium' });
     }
 
@@ -136,7 +193,7 @@ export const AgentMemoryChat: React.FC = () => {
     // Match generic tech stack
     const techMatch = userText.match(/(?:i\s+use|i\s+develop\s+in|i\s+write|coding\s+in)\s+([a-zA-Z0-9/#.+\s]+)/i);
     if (techMatch && techMatch[1]) {
-      const tech = techMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      const tech = cleanTechnologyName(techMatch[1]);
       newFacts.push({ topic: 'Tech Stack', detail: `Uses ${tech}`, importance: 'high' });
     }
 
