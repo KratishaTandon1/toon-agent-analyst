@@ -106,7 +106,7 @@ export function getIndexedChunks(): DocumentChunk[] {
 }
 
 /**
- * Search the index using TF-based term relevance ranking
+ * Search the index using TF-IDF (Term Frequency-Inverse Document Frequency) relevance ranking
  */
 export function searchChunks(query: string, limit = 4): DocumentChunk[] {
   if (!query || indexedChunks.length === 0) return [];
@@ -126,16 +126,36 @@ export function searchChunks(query: string, limit = 4): DocumentChunk[] {
       .slice(0, limit);
   }
 
-  // Score each chunk
+  // 1. Calculate Document Frequency (DF) for each keyword in our active chunk corpus
+  const docFrequencies: Record<string, number> = {};
+  keywords.forEach(keyword => {
+    let count = 0;
+    indexedChunks.forEach(chunk => {
+      if (chunk.text.toLowerCase().includes(keyword)) {
+        count++;
+      }
+    });
+    docFrequencies[keyword] = count;
+  });
+
+  // 2. Score each chunk using TF-IDF: Sum(TF * IDF)
   const scored = indexedChunks.map(chunk => {
     let score = 0;
     const lowerText = chunk.text.toLowerCase();
     
     keywords.forEach(keyword => {
-      // Basic term frequency score
+      // Term Frequency (occurrences in this chunk)
       const occurrences = lowerText.split(keyword).length - 1;
+      
       if (occurrences > 0) {
-        score += occurrences * (1 + 1 / keyword.length); // Weight longer keyword matches slightly higher
+        // Document Frequency (number of chunks containing the word)
+        const df = docFrequencies[keyword] || 0;
+        
+        // Smoothed IDF: log(1 + (Total Chunks / (1 + DF)))
+        const idf = Math.log(1 + (indexedChunks.length / (1 + df)));
+        
+        // TF-IDF Score
+        score += occurrences * idf;
       }
     });
     

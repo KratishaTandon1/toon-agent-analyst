@@ -100,7 +100,6 @@ export async function runMultiAgentWorkflow(
   let jsCode = '';
   let jsResult = '';
   
-  const q = queryText.toLowerCase();
   const isDocQuery = selectedTable === 'uploaded_docs';
   const isWebQuery = /price|weather|ceo|news|stock|ethereum|crypto|bitcoin/i.test(queryText);
 
@@ -280,8 +279,19 @@ return {
     try {
       const systemPrompt = `You are a Lead Executive Analyst AI Agent.
 Analyze the following compiled data structure provided in TOON (Token-Oriented Object Notation) by your Data Agent.
-Synthesize a professional, comprehensive response directly resolving the user request: "${queryText}".
-Model temperature parameter: ${temperature}. Keep response quantitative and highly informative.`;
+Synthesize a professional, comprehensive, and quantitative response directly resolving the user request: "${queryText}".
+
+You MUST structure your response into the following exact sections with markdown headings:
+### 🔍 Reasoning Protocol
+Briefly outline the filters, mathematical steps, or RAG search contexts used to analyze the dataset.
+
+### 📊 Statistical Findings
+Output a quantitative summary. If analyzing tabular/multiple items, you MUST format the stats inside a markdown table comparing key metrics.
+
+### 💡 Strategic Recommendations
+Provide 2-3 specific, actionable business recommendations or diagnostic suggestions based on the metrics.
+
+Model temperature parameter: ${temperature}.`;
       
       finalAnswer = await callRealLLM(provider, apiKey, systemPrompt, toonStr);
     } catch (err: unknown) {
@@ -289,27 +299,8 @@ Model temperature parameter: ${temperature}. Keep response quantitative and high
       finalAnswer = `[RAG Error] Live LLM integration failed: ${e.message}. Falling back to simulated synthesis.`;
     }
   } else {
-    // Generate simulated synthesis response based on source
-    if (chosenSource === 'web_search') {
-      finalAnswer = `[Web Search Analysis Report] I queried live search engines for "${queryText}". I retrieved and synthesized matching records: ${
-        q.includes('ethereum') ? `Ethereum is currently trading at $3,450.20, showing a strong daily uptrend, with Layer-2 fees dropping.` :
-        q.includes('ceo') ? `Sundar Pichai is the current CEO of Alphabet/Google, and has recently announced new advanced AI integrations.` :
-        `Current local temperature for Seattle shows clear skies at 68°F, with a warm front entering the region.`
-      } (Data fetched live from web search proxy logs).`;
-    } else if (isDocQuery) {
-      finalAnswer = `[Simulation Document RAG] I retrieved matching snippets from your uploaded knowledge docs. Analysis shows the document covers the specification rules of TOON, detailing double-space nested structures and CSV-like headers (\`staff[2]{fields}:\`) which saves up to 50% on token counts compared to standard JSON.`;
-    } else {
-      if (jsCode) {
-        const outObj = sandboxOutput as Record<string, number>;
-        finalAnswer = `[Simulation Workspace Analysis] I analyzed the code sandbox calculations. The aggregate metrics show: ${
-          chosenSource === 'orders' ? `Total sales total is $${outObj.sales_sum} with an average of ${outObj.avg_items_per_order} items per order.` :
-          chosenSource === 'logs' ? `The server logs logged ${outObj.errors} error codes and ${outObj.warnings} warnings.` :
-          `We have ${outObj.open_tickets} open support tickets and ${outObj.frustrated_customers} negative customer comments.`
-        } These results were processed in the sandboxed JS execution loop.`;
-      } else {
-        finalAnswer = `[Simulation Workspace Analysis] The data agent returned ${fetchedData.length} records. Synthesizing these items shows they match your filter criteria for "${queryText}". Let me know if you would like me to compile calculations on these records!`;
-      }
-    }
+    // Generate simulated synthesis response dynamically based on data content
+    finalAnswer = compileDynamicSummary(chosenSource, fetchedData, queryText, sandboxOutput);
   }
   
   logs[2].thought = `Executive summary synthesized successfully. Tuning constraints met (Temp: ${temperature}). Dispatching output.`;
@@ -325,3 +316,219 @@ Model temperature parameter: ${temperature}. Keep response quantitative and high
     selfCorrectionTrace: correctionTrace
   };
 }
+
+/**
+ * Compiles a mathematically accurate, dynamic analysis report over mock data records.
+ */
+function compileDynamicSummary(
+  chosenSource: string,
+  data: unknown[],
+  queryText: string,
+  sandboxOutput: unknown
+): string {
+  const count = data.length;
+  if (count === 0) {
+    return `### 🔍 Reasoning Protocol
+- Filtered operational records for query: "${queryText}".
+- Located 0 matching rows.
+
+### 📊 Statistical Findings
+- **Data Count**: 0 entries found.
+- The constraint set returned an empty payload.
+
+### 💡 Strategic Recommendations
+- **Broaden Filters**: The search criteria was too narrow. Try relaxing conditions or resetting the database tables.`;
+  }
+
+  const rows = data as Record<string, unknown>[];
+
+  if (chosenSource === 'orders') {
+    let totalSales = 0;
+    let totalItems = 0;
+    let maxSale = 0;
+    let topCustomer = '';
+    const countries: Record<string, number> = {};
+    const categories: Record<string, number> = {};
+
+    rows.forEach(r => {
+      const tot = Number(r.total) || 0;
+      const items = Number(r.items) || 0;
+      totalSales += tot;
+      totalItems += items;
+
+      if (tot > maxSale) {
+        maxSale = tot;
+        topCustomer = String(r.customer || 'Unknown');
+      }
+
+      const ctry = String(r.country || 'Unknown');
+      countries[ctry] = (countries[ctry] || 0) + 1;
+
+      const cat = String(r.category || 'Unknown');
+      categories[cat] = (categories[cat] || 0) + 1;
+    });
+
+    // Check if sandboxed calculations already processed and outputted values
+    if (sandboxOutput && typeof sandboxOutput === 'object') {
+      const sand = sandboxOutput as Record<string, number>;
+      if (sand.sales_sum !== undefined) totalSales = sand.sales_sum;
+      if (sand.avg_items_per_order !== undefined) totalItems = Math.round(sand.avg_items_per_order * count);
+    }
+
+    const avgSale = totalSales / count;
+    const topCountry = Object.keys(countries).reduce((a, b) => countries[a] > countries[b] ? a : b, 'US');
+    const topCategory = Object.keys(categories).reduce((a, b) => categories[a] > categories[b] ? a : b, 'Electronics');
+
+    return `### 🔍 Reasoning Protocol
+- Filtered e-commerce database for query constraint: "${queryText}".
+- Located ${count} matching transactions. Evaluated aggregate totals, average purchase size, and category densities.
+
+### 📊 Statistical Findings
+| Metric | Value | Details |
+| :--- | :--- | :--- |
+| **Record Count** | ${count} orders | Successfully queried |
+| **Cumulative Sales** | $${totalSales.toFixed(2)} | Real-time reduction calculation |
+| **Average Order Value** | $${avgSale.toFixed(2)} | Computed mean rate |
+| **Total Items Ordered** | ${totalItems.toFixed(0)} units | Sum volume |
+| **Top Country** | ${topCountry} | Most active region |
+| **Key Category** | ${topCategory} | Primary product volume |
+
+### 💡 Strategic Recommendations
+- **Anomalous High-Value Order**: A maximum transaction of **$${maxSale.toFixed(2)}** was completed by customer **${topCustomer}**. Flagged for client relationship follow-up.
+- **Inventory Audit**: Focus stock allocations on **${topCategory}** lines which represent the primary purchase category in this cohort.`;
+  }
+
+  if (chosenSource === 'logs') {
+    let errors = 0;
+    let warnings = 0;
+    let info = 0;
+    const services: Record<string, number> = {};
+    const ips: Record<string, number> = {};
+
+    rows.forEach(r => {
+      const lvl = String(r.level).toLowerCase();
+      if (lvl === 'error') errors++;
+      else if (lvl === 'warning') warnings++;
+      else info++;
+
+      const svc = String(r.service || 'Unknown');
+      services[svc] = (services[svc] || 0) + 1;
+
+      const ip = String(r.ip || 'Unknown');
+      ips[ip] = (ips[ip] || 0) + 1;
+    });
+
+    // Check if sandboxed calculations already processed and outputted values
+    if (sandboxOutput && typeof sandboxOutput === 'object') {
+      const sand = sandboxOutput as Record<string, number>;
+      if (sand.errors !== undefined) errors = sand.errors;
+      if (sand.warnings !== undefined) warnings = sand.warnings;
+    }
+
+    const topService = Object.keys(services).reduce((a, b) => services[a] > services[b] ? a : b, 'gateway');
+    const topIp = Object.keys(ips).reduce((a, b) => ips[a] > ips[b] ? a : b, '127.0.0.1');
+
+    return `### 🔍 Reasoning Protocol
+- Filtered operational server logs for query constraints: "${queryText}".
+- Evaluated network traffic patterns and error density logs.
+
+### 📊 Statistical Findings
+| Log Level | Frequency | Service Context |
+| :--- | :--- | :--- |
+| **Errors (Critical)** | ${errors} | Requires developer review |
+| **Warnings (Alerts)** | ${warnings} | Threshold alarms |
+| **Info Logs (General)** | ${info} | Standard status codes |
+| **Total Events** | ${count} | Log trace volume |
+
+### 💡 Strategic Recommendations
+- **System Hotspot**: Service **${topService}** logged the highest event count. Verify load balancing limits.
+- **Traffic Origin Audit**: IP address **${topIp}** initiated the highest volume of server requests. Verify if it corresponds to an internal agent or API scraper.`;
+  }
+
+  if (chosenSource === 'tickets') {
+    let unresolved = 0;
+    let negative = 0;
+    let positive = 0;
+    let neutral = 0;
+    let critical = 0;
+    const categories: Record<string, number> = {};
+
+    rows.forEach(r => {
+      if (!r.resolved) unresolved++;
+      
+      const sent = String(r.sentiment).toLowerCase();
+      if (sent === 'negative') negative++;
+      else if (sent === 'positive') positive++;
+      else neutral++;
+
+      const prio = String(r.priority).toLowerCase();
+      if (prio === 'critical' || prio === 'high') critical++;
+
+      const cat = String(r.category || 'Unknown');
+      categories[cat] = (categories[cat] || 0) + 1;
+    });
+
+    // Check if sandboxed calculations already processed and outputted values
+    if (sandboxOutput && typeof sandboxOutput === 'object') {
+      const sand = sandboxOutput as Record<string, number>;
+      if (sand.open_tickets !== undefined) unresolved = sand.open_tickets;
+      if (sand.frustrated_customers !== undefined) negative = sand.frustrated_customers;
+    }
+
+    const topCategory = Object.keys(categories).reduce((a, b) => categories[a] > categories[b] ? a : b, 'Billing');
+
+    return `### 🔍 Reasoning Protocol
+- Filtered support ticket database for query constraint: "${queryText}".
+- Evaluated case priorities, resolution states, and sentiment trends.
+
+### 📊 Statistical Findings
+| Support Indicator | Metrics | Details |
+| :--- | :--- | :--- |
+| **Total Tickets** | ${count} | User inquiries |
+| **Unresolved Cases** | ${unresolved} | Outstanding backlogs |
+| **Sentiment Breakdown** | 🙂 ${positive} / 😐 ${neutral} / 🙁 ${negative} | Feedback mix |
+| **High/Critical Priority** | ${critical} | SLA targets |
+| **Primary Category** | ${topCategory} | Ticket hotspot |
+
+### 💡 Strategic Recommendations
+- **SLA Violation Warning**: Locate and prioritize the **${critical}** critical/high priority unresolved tickets.
+- **Systemic Issue**: **${topCategory}** inquiries dominate this support cohort. Coordinate with the product/finance department to resolve root causes.`;
+  }
+
+  if (chosenSource === 'uploaded_docs') {
+    const docChunks = rows.map((r, idx) => `**Excerpt #${idx + 1} (${r.source})**:\n> "${r.excerpt}"`).join('\n\n');
+    return `### 🔍 Reasoning Protocol
+- Query constraints: "${queryText}".
+- Queried local vector index utilizing TF-IDF keyword relevance logic. Located ${count} relevant knowledge segments.
+
+### 📊 Statistical Findings
+${docChunks}
+
+### 💡 Strategic Recommendations
+- **Token footprint savings**: Pack these matching tabular blocks directly inside prompt contexts to save context storage space.`;
+  }
+
+  if (chosenSource === 'web_search') {
+    const searchCards = rows.map(r => `* **[${r.source}]** (${r.date}): "${r.snippet}"`).join('\n');
+    return `### 🔍 Reasoning Protocol
+- Query constraint: "${queryText}".
+- Routed task to simulated live search engine api.
+
+### 📊 Statistical Findings
+${searchCards}
+
+### 💡 Strategic Recommendations
+- **Cache Local Snippets**: These snippets represent the most recent parameters. Cache locally to avoid excess proxy delays.`;
+  }
+
+  return `### 🔍 Reasoning Protocol
+- Analyzed records from source "${chosenSource}" matching query: "${queryText}".
+
+### 📊 Statistical Findings
+- Matching Records Count: ${count} rows.
+- Evaluated object parameters and serialized fields into tabular formats.
+
+### 💡 Strategic Recommendations
+- Setup Live LLM API keys in the Settings tab to perform full semantic synthesis.`;
+}
+
