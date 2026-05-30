@@ -234,7 +234,7 @@ export const MultiAgentTeam: React.FC<MultiAgentTeamProps> = ({
             <span className="node-lbl font-bold" style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>2. Data/Tool Agent</span>
             
             <div className="node-tuner-box" style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', width: '100%', alignItems: 'center' }}>
-              <span className="success-badge font-mono" style={{ fontSize: '0.65rem' }}>Sandbox: ENABLED</span>
+              <span className="success-badge font-mono" style={{ fontSize: '0.65rem' }}>JS Interpreter: ACTIVE</span>
             </div>
           </div>
 
