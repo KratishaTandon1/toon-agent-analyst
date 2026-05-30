@@ -107,7 +107,7 @@ export const AgentMemoryChat: React.FC = () => {
     const qLower = q.toLowerCase();
     
     // Match "I live in <Location>" or "I am from <Location>" or location matches
-    const locationMatch = q.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s\-]+)/i);
+    const locationMatch = q.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s-]+)/i);
     if (locationMatch && locationMatch[1]) {
       const loc = cleanLocationName(locationMatch[1]);
       return `Interesting location context! I've noted that you are located in "${loc}" and added it to my long-term memory. Knowing your geography allows me to optimize server request routing.`;
@@ -177,7 +177,7 @@ export const AgentMemoryChat: React.FC = () => {
     const newFacts: Fact[] = [];
     
     // Match location
-    const locationMatch = userText.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s\-]+)/i);
+    const locationMatch = userText.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z0-9,\s-]+)/i);
     if (locationMatch && locationMatch[1]) {
       const loc = cleanLocationName(locationMatch[1]);
       newFacts.push({ topic: 'Location', detail: `Lives in ${loc}`, importance: 'medium' });

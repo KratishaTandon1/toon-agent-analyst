@@ -93,7 +93,10 @@ export function flattenStaffPayload(data: { company: string; staff: NestedStaff[
 }`;
         } else {
           // Generic flattening utility for other JSON objects
-          const arrayKeys = Object.keys(refactored).filter(k => Array.isArray(refactored[k]));
+          const arrayKeys = Object.keys(refactored).filter(k => 
+            Array.isArray(refactored[k]) && 
+            (refactored[k] as unknown[]).every(item => item && typeof item === 'object' && !Array.isArray(item))
+          );
           if (arrayKeys.length > 0) {
             const targetKey = arrayKeys[0];
             
