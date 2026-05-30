@@ -194,12 +194,27 @@ export async function callRealLLM(
   provider: 'gemini' | 'openai',
   apiKey: string,
   systemPrompt: string,
-  toonPrompt: string
+  toonPrompt: string,
+  modelName?: string
 ): Promise<string> {
   if (provider === 'gemini') {
+    let model = modelName || 'gemini-2.0-flash';
+    const cleanModel = model.toLowerCase();
+    
+    // Automatically map retired 1.5 models to active 2.0-flash models
+    if (cleanModel.includes('1.5') || cleanModel.includes('flash')) {
+      model = 'gemini-2.0-flash';
+    } else if (cleanModel.includes('pro')) {
+      model = 'gemini-2.0-pro-exp';
+    }
+    
+    if (!model.startsWith('gemini-')) {
+      model = 'gemini-2.0-flash';
+    }
+
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: {
