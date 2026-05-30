@@ -49,29 +49,35 @@ export const AgentMemoryChat: React.FC = () => {
   const getSimulatedAgentResponse = (q: string): string => {
     const qLower = q.toLowerCase();
     
+    // Match "I live in <Location>" or "I am from <Location>" or location matches
+    const locationMatch = q.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z\s]+)/i);
+    if (locationMatch && locationMatch[1]) {
+      const loc = locationMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      return `Interesting location context! I've noted that you are located in "${loc}" and added it to my long-term memory. Knowing your geography allows me to optimize server request routing.`;
+    }
+
+    // Match "My name is <Name>" or "I am <Name>"
+    const nameMatch = q.match(/(?:my\s+name\s+is|i\s+am\s+called)\s+([a-zA-Z\s]+)/i);
+    if (nameMatch && nameMatch[1]) {
+      const name = nameMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      return `Nice to meet you, ${name}! I have updated your profile name in my long-term database memory.`;
+    }
+
     if (qLower.includes('developer') || qLower.includes('role') || qLower.includes('job')) {
-      const topic = 'User Role';
-      const detail = 'User acts as Lead developer / agent system tuner';
-      setFacts(prev => {
-        if (prev.some(f => f.topic === topic)) return prev;
-        return [...prev, { topic, detail, importance: 'high' }];
-      });
       return "Got it! I've logged your developer profile into my persistent memory vault. You are tuning the agent pipeline. I'll make sure future responses are more technical.";
     }
     
     if (qLower.includes('toon') || qLower.includes('token') || qLower.includes('notation')) {
-      const topic = 'Tech Stack';
-      const detail = 'System utilizes TOON for state serialization';
-      setFacts(prev => {
-        if (prev.some(f => f.topic === topic)) return prev;
-        return [...prev, { topic, detail, importance: 'medium' }];
-      });
       return "Indeed! TOON enables highly efficient data-passing. I've noted that in my memory. We will emphasize token savings in our work.";
     }
     
-    if (qLower.includes('seattle') || qLower.includes('san francisco') || qLower.includes('new york') || qLower.includes('london')) {
-      return "Interesting location! I've added your city location to my context model. Knowing your environment helps me adapt local date/time integrations.";
+    // Match general technologies like React, Node, Python, Python/FastAPI, etc.
+    const techMatch = q.match(/(?:i\s+use|i\s+develop\s+in|i\s+write|coding\s+in)\s+([a-zA-Z0-9/#.+\s]+)/i);
+    if (techMatch && techMatch[1]) {
+      const tech = techMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      return `Excellent technology choice! I've logged that you work with "${tech}". I'll align our pipeline logic with ${tech} templates.`;
     }
+    
     return "Understood. I am tracking our statements and maintaining your profile statistics. Tell me more about your design philosophies or interests!";
   };
 
@@ -113,23 +119,56 @@ export const AgentMemoryChat: React.FC = () => {
     const q = userText.toLowerCase();
     const newFacts: Fact[] = [];
     
-    if (q.includes('react') || q.includes('typescript') || q.includes('code')) {
-      newFacts.push({ topic: 'Frontend Tech', detail: 'Uses React/TS', importance: 'high' });
+    // Match location
+    const locationMatch = userText.match(/(?:i\s+live\s+in|i\s+am\s+from|lives\s+in)\s+([a-zA-Z\s]+)/i);
+    if (locationMatch && locationMatch[1]) {
+      const loc = locationMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      newFacts.push({ topic: 'Location', detail: `Lives in ${loc}`, importance: 'medium' });
     }
-    if (q.includes('express') || q.includes('node')) {
-      newFacts.push({ topic: 'Backend Tech', detail: 'Prefers Node/Express', importance: 'medium' });
+
+    // Match name
+    const nameMatch = userText.match(/(?:my\s+name\s+is|i\s+am\s+called)\s+([a-zA-Z\s]+)/i);
+    if (nameMatch && nameMatch[1]) {
+      const name = nameMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      newFacts.push({ topic: 'User Profile', detail: `Name is ${name}`, importance: 'high' });
     }
-    if (q.includes('fastapi') || q.includes('python')) {
-      newFacts.push({ topic: 'Backend Tech', detail: 'Prefers Python/FastAPI', importance: 'medium' });
+
+    // Match generic tech stack
+    const techMatch = userText.match(/(?:i\s+use|i\s+develop\s+in|i\s+write|coding\s+in)\s+([a-zA-Z0-9/#.+\s]+)/i);
+    if (techMatch && techMatch[1]) {
+      const tech = techMatch[1].trim().replace(/\b\w/g, c => c.toUpperCase());
+      newFacts.push({ topic: 'Tech Stack', detail: `Uses ${tech}`, importance: 'high' });
     }
-    if (q.includes('seattle')) {
-      newFacts.push({ topic: 'Location', detail: 'Lives in Seattle', importance: 'low' });
-    } else if (q.includes('san francisco') || q.includes('sf')) {
-      newFacts.push({ topic: 'Location', detail: 'Lives in San Francisco', importance: 'low' });
-    } else if (q.includes('london')) {
-      newFacts.push({ topic: 'Location', detail: 'Lives in London', importance: 'low' });
+
+    // Fallbacks for keywords if no regex matches
+    if (newFacts.every(f => f.topic !== 'Tech Stack')) {
+      if (q.includes('react') || q.includes('typescript') || q.includes('code')) {
+        newFacts.push({ topic: 'Tech Stack', detail: 'Uses React/TS', importance: 'high' });
+      } else if (q.includes('express') || q.includes('node')) {
+        newFacts.push({ topic: 'Tech Stack', detail: 'Prefers Node/Express', importance: 'medium' });
+      } else if (q.includes('fastapi') || q.includes('python')) {
+        newFacts.push({ topic: 'Tech Stack', detail: 'Prefers Python/FastAPI', importance: 'medium' });
+      }
+    }
+
+    if (newFacts.every(f => f.topic !== 'Location')) {
+      if (q.includes('seattle')) {
+        newFacts.push({ topic: 'Location', detail: 'Lives in Seattle', importance: 'low' });
+      } else if (q.includes('san francisco') || q.includes('sf')) {
+        newFacts.push({ topic: 'Location', detail: 'Lives in San Francisco', importance: 'low' });
+      } else if (q.includes('london')) {
+        newFacts.push({ topic: 'Location', detail: 'Lives in London', importance: 'low' });
+      }
+    }
+
+    if (q.includes('developer') || q.includes('role') || q.includes('job')) {
+      newFacts.push({ topic: 'User Role', detail: 'User acts as Lead developer / agent system tuner', importance: 'high' });
     }
     
+    if (q.includes('toon') || q.includes('token') || q.includes('notation')) {
+      newFacts.push({ topic: 'Project Context', detail: 'System utilizes TOON for state serialization', importance: 'medium' });
+    }
+
     if (newFacts.length > 0) {
       setFacts(prev => {
         // filter out duplicate topics
