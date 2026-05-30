@@ -1903,3 +1903,143 @@ body {
   }
 }
 
+/* Code block developer formatting with scrollbars instead of wrapping */
+.code-view {
+  white-space: pre !important;
+  word-break: normal !important;
+  overflow-x: auto !important;
+  display: block;
+  max-width: 100%;
+}
+
+/* Welcome guide min-width update to support small viewports */
+.guide-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+}
+
+/* Stacking query bars on mobile to prevent horizontal clipping */
+@media (max-width: 768px) {
+  .query-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .query-bar select,
+  .query-bar input,
+  .query-bar button {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
+  }
+  
+  /* Stacking DB editor headers */
+  .db-editor-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+  
+  .db-actions {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .db-actions select,
+  .db-actions button,
+  .db-actions label {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .db-actions div {
+    display: flex;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Stacking RAG and Memory headers */
+  .memory-header-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .memory-header-row button {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Stacking Playground headers */
+  .playground-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .example-buttons {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 0.4rem !important;
+  }
+}
+
+/* Mobile status bar and API configuration field stackers */
+@media (max-width: 600px) {
+  .status-guide-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .status-left {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .mode-badge {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .change-mode-link {
+    text-align: center !important;
+    width: 100% !important;
+  }
+  
+  .guide-toggle-btn {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .key-input-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .key-input-wrapper input,
+  .key-input-wrapper button {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .code-panel-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  
+  .code-panel-header button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+
