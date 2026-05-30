@@ -2061,5 +2061,41 @@ body {
   }
 }
 
+/* Global width overrides to prevent textarea overflows */
+.editor-textarea, 
+.playground-textarea {
+  width: 100% !important;
+}
+
+/* Responsive tab selectors inside developer panel viewports */
+.tab-buttons {
+  display: flex !important;
+  gap: 0.25rem !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  scrollbar-width: none !important;
+  max-width: 100% !important;
+}
+
+.tab-buttons::-webkit-scrollbar {
+  display: none !important;
+}
+
+.tab-buttons .tab-btn {
+  flex-shrink: 0 !important;
+}
+
+/* Suggestion cards responsiveness */
+.suggestions-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+}
+
+/* Thermometer label wraps */
+.thermometer-labels {
+  flex-wrap: wrap !important;
+  gap: 0.25rem !important;
+}
+
+
 
 
