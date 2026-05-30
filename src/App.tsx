@@ -56,6 +56,9 @@ function App() {
   // Persistent Ledger Logs State
   const [ledgerLogs, setLedgerLogs] = useState<RunLog[]>([]);
 
+  // Guide Toggle State
+  const [showHelpGuide, setShowHelpGuide] = useState<boolean>(true);
+
   // Load settings and ledger from localStorage
   useEffect(() => {
     const localUseLive = localStorage.getItem('toon_use_live');
@@ -331,6 +334,69 @@ Synthesize a comprehensive, factual, and quantitative answer addressing the user
           </button>
         </nav>
       </header>
+
+      {/* Dynamic Status & Quick Guide Bar */}
+      <div className="status-guide-bar">
+        <div className="status-left">
+          {useLiveLLM ? (
+            <div className="mode-badge mode-live highlight-glow-inline">
+              <span className="dot dot-live"></span>
+              <strong>Live LLM Mode Active</strong>
+              <span className="desc">({apiProvider === 'gemini' ? 'Gemini API' : 'GPT-4o-mini'})</span>
+            </div>
+          ) : (
+            <div className="mode-badge mode-sim">
+              <span className="dot dot-sim"></span>
+              <strong>Simulation Mode Active</strong>
+              <span className="desc">(No API Key required - Offline mode)</span>
+            </div>
+          )}
+          <button onClick={() => setActiveTab('settings')} className="change-mode-link">
+            Change mode in Settings ➜
+          </button>
+        </div>
+        <button 
+          onClick={() => setShowHelpGuide(prev => !prev)} 
+          className={`guide-toggle-btn ${showHelpGuide ? 'active' : ''}`}
+        >
+          {showHelpGuide ? '✕ Hide Quick Start Guide' : '❓ Quick Start Guide'}
+        </button>
+      </div>
+
+      {showHelpGuide && (
+        <div className="quick-help-guide fade-in">
+          <h4 className="guide-header text-gradient">Welcome to AgentStudio Workspace! 🚀</h4>
+          <p className="guide-intro text-muted">
+            This collaborative workspace is designed to test how **TOON (Token-Oriented Object Notation)** can compress API payloads, saving up to 50% on LLM context windows. Here is a quick guide to what you can do:
+          </p>
+          <div className="guide-grid">
+            <div className="guide-card" onClick={() => { setActiveTab('agent'); setShowHelpGuide(false); }}>
+              <h5>🤖 Agent Team (Start Here)</h5>
+              <p>Tune and run a 3-agent orchestration workflow (Planner ➔ Data Agent ➔ Analyst) with a sandboxed coding loop that automatically corrects its own syntax errors!</p>
+            </div>
+            <div className="guide-card" onClick={() => { setActiveTab('prompt_test'); setShowHelpGuide(false); }}>
+              <h5>⚔️ Prompt A/B Tester</h5>
+              <p>Benchmark two variant prompts side-by-side to compare latency (ms), token footprint, and transaction costs.</p>
+            </div>
+            <div className="guide-card" onClick={() => { setActiveTab('documents'); setShowHelpGuide(false); }}>
+              <h5>📄 RAG Documents</h5>
+              <p>Paste text files, build a local TF-IDF vector index, and run RAG document search query loops.</p>
+            </div>
+            <div className="guide-card" onClick={() => { setActiveTab('api'); setShowHelpGuide(false); }}>
+              <h5>🔌 API Fetcher</h5>
+              <p>Fetch real JSON data from public URL endpoints, serialize it to TOON tabular structure, and run queries.</p>
+            </div>
+            <div className="guide-card" onClick={() => { setActiveTab('optimizer'); setShowHelpGuide(false); }}>
+              <h5>📐 Schema Optimizer</h5>
+              <p>Detect nested arrays in your JSON structures and flatten them to increase TOON's compression ratio.</p>
+            </div>
+            <div className="guide-card" onClick={() => { setActiveTab('ledger'); setShowHelpGuide(false); }}>
+              <h5>📊 Cost Ledger</h5>
+              <p>Review the aggregate token savings dashboard tracking lifetime cost savings from using TOON vs JSON.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Workspace Layout */}
       <main className="app-main">
