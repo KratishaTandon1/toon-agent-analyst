@@ -199,7 +199,7 @@ export const MultiAgentTeam: React.FC<MultiAgentTeamProps> = ({
         
         <span className="font-bold text-gradient" style={{ fontSize: '0.75rem', textTransform: 'uppercase', opacity: 0.8 }}>Interactive Node Configurator:</span>
         
-        <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', width: '100%', marginTop: '0.5rem' }}>
+        <div className="nodes-container">
           
           {/* Planner Node Tuner */}
           <div className={`agent-node ${currentNode === 'Planner' ? 'active-node highlight-glow' : ''}`} style={{ minWidth: '160px' }}>
