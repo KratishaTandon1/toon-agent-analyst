@@ -510,7 +510,11 @@ Synthesize a comprehensive, factual, and quantitative answer addressing the user
 
         {activeTab === 'chat' && (
           <div className="fade-in">
-            <AgentMemoryChat />
+            <AgentMemoryChat
+              useLiveLLM={useLiveLLM}
+              apiProvider={apiProvider}
+              apiKey={apiKey}
+            />
           </div>
         )}
 

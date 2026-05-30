@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { estimateTokens } from '../utils/tokenizer';
 import { jsonToToon } from '../utils/toonConverter';
+import { callRealLLM } from '../utils/mockDatabase';
 
 interface ChatMessage {
   id: number;
@@ -15,7 +16,17 @@ interface Fact {
   importance: 'high' | 'medium' | 'low';
 }
 
-export const AgentMemoryChat: React.FC = () => {
+interface AgentMemoryChatProps {
+  useLiveLLM: boolean;
+  apiProvider: 'gemini' | 'openai';
+  apiKey: string;
+}
+
+export const AgentMemoryChat: React.FC<AgentMemoryChatProps> = ({
+  useLiveLLM,
+  apiProvider,
+  apiKey
+}) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 1, sender: 'agent', text: "Hello! I am your Memory-Aware Assistant. As we talk, I maintain a short-term conversation thread. Watch the context thermometer above fill up!", tokens: 45 },
   ]);
@@ -24,6 +35,7 @@ export const AgentMemoryChat: React.FC = () => {
     { topic: 'Core Role', detail: 'Agent is context-aware coordinator', importance: 'high' }
   ]);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
   const msgIdRef = useRef(10);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -139,7 +151,7 @@ export const AgentMemoryChat: React.FC = () => {
   };
 
   const handleSend = () => {
-    if (input.trim() === '') return;
+    if (input.trim() === '' || isThinking) return;
     
     const userMsgText = input.trim();
     const userTokens = estimateTokens(`user: ${userMsgText}`, 'cl100k_base');
@@ -153,10 +165,28 @@ export const AgentMemoryChat: React.FC = () => {
     
     setInput('');
     setMessages(prev => [...prev, userMsg]);
+    setIsThinking(true);
 
-    // Simulate Agent Thinking and Response
-    setTimeout(() => {
-      const agentText = getSimulatedAgentResponse(userMsgText);
+    const triggerResponse = async () => {
+      let agentText = '';
+      try {
+        if (useLiveLLM && apiKey) {
+          const systemPrompt = `You are a memory-aware chatbot assistant. 
+Here are the archived facts we know about the user (formatted in TOON):
+${rawMemoryText || 'No facts archived yet.'}
+
+Respond to the user's latest message in a helpful, conversational manner, taking into account any known facts. Keep the response relatively concise (1-3 sentences) unless asked for details.`;
+
+          agentText = await callRealLLM(apiProvider, apiKey, systemPrompt, rawConversationText + `\nuser: ${userMsgText}`);
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 800));
+          agentText = getSimulatedAgentResponse(userMsgText);
+        }
+      } catch (err: unknown) {
+        const e = err instanceof Error ? err : new Error(String(err));
+        agentText = `[Error calling live LLM: ${e.message}]. Falling back to simulated response. ${getSimulatedAgentResponse(userMsgText)}`;
+      }
+
       const agentTokens = estimateTokens(`agent: ${agentText}`, 'cl100k_base');
       msgIdRef.current += 1;
       const agentMsg: ChatMessage = {
@@ -169,7 +199,10 @@ export const AgentMemoryChat: React.FC = () => {
       
       // Auto-extract facts behind the scenes to show agent intelligence
       extractSimulatedFacts(userMsgText);
-    }, 800);
+      setIsThinking(false);
+    };
+
+    triggerResponse();
   };
 
   const extractSimulatedFacts = (userText: string) => {
@@ -319,6 +352,13 @@ export const AgentMemoryChat: React.FC = () => {
                 </div>
               </div>
             )}
+            {isThinking && (
+              <div className="chat-bubble-wrapper agent-wrapper blink">
+                <div className="chat-bubble agent-bubble">
+                  <p>Agent is thinking...</p>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
           <div className="chat-input-bar">
@@ -329,12 +369,12 @@ export const AgentMemoryChat: React.FC = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Type about your tech stacks, location, e.g., 'I live in Seattle and write React'..."
               className="premium-input"
-              disabled={isCompressing}
+              disabled={isCompressing || isThinking}
             />
             <button 
               onClick={handleSend} 
               className="premium-btn"
-              disabled={isCompressing || input.trim() === ''}
+              disabled={isCompressing || isThinking || input.trim() === ''}
             >
               Send
             </button>
